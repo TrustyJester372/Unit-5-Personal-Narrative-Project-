@@ -1,0 +1,94 @@
+First filter (color shift) wasn't working, so I asked ChatGPT for help. I copy pasted my SceneOne class and ImageFilter class and asked for help.
+It was a simple fix:
+Before: 
+ public void topRow(int value) {
+   for (ImageFilter img : images[0]) {
+    drawImage(img, 0, 0, 400, 400, 0);
+    pause(1);
+
+    img.colorShift(value);
+    }
+    }
+After:
+  public void topRow(int value) {
+   for (ImageFilter img : images[0]) {
+    drawImage(img, 0, 0, 400, 400, 0);
+    pause(1);
+
+    img.colorShift(value);
+
+    drawImage(img, 0, 0, 400, 400, 0); <= New line
+    pause(1); <= New line  
+   }
+    }
+----------------------------------------------------------------------------------------------------------------------------------------------------
+I also asked ChatGPT to help explain the logic behind the "-value" portion of the darken filter
+Response: 
+Great question — this shows you actually understand what you're coding 👏
+
+In a darken filter, the - value subtracts brightness from each color channel.
+
+💡 How It Works
+
+Every pixel has 3 color values:
+
+Red   (0–255)
+Green (0–255)
+Blue  (0–255)
+
+
+When you darken an image, you usually do something like:
+
+pixel.setRed(pixel.getRed() - value);
+pixel.setGreen(pixel.getGreen() - value);
+pixel.setBlue(pixel.getBlue() - value);
+
+🎨 What the - value Does
+
+It reduces the intensity of each color.
+
+Example:
+
+Original pixel:
+
+R = 200
+G = 150
+B = 100
+
+
+If value = 50:
+
+R = 200 - 50 = 150
+G = 150 - 50 = 100
+B = 100 - 50 = 50
+
+
+The pixel becomes darker because the RGB numbers are smaller.
+
+⚠ Important Detail
+
+Color values cannot go below 0.
+
+If you do:
+
+20 - 50 = -30
+
+
+That’s invalid.
+
+So good filters usually clamp the value like this:
+
+int newRed = Math.max(0, pixel.getRed() - value);
+
+
+This prevents negative numbers.
+
+🔥 Why Subtracting Makes It Darker
+
+Higher RGB numbers = brighter color
+
+Lower RGB numbers = darker color
+
+0,0,0 = pure black
+
+So subtracting pushes the pixel closer to black.
